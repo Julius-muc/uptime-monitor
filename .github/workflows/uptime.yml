@@ -36,3 +36,12 @@ jobs:
 
       - name: Run Playwright tests
         run: npx playwright test
+
+      - name: Run uptime analysis
+        run: npx ts-node analyse.ts
+
+      - name: Upload uptime report
+        uses: actions/upload-artifact@v3
+        with:
+          name: uptime-report
+          path: uptime-log.json
