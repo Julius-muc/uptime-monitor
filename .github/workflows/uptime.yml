@@ -22,13 +22,13 @@ jobs:
           fetch-depth: 0
 
       - name: Download uptime log artifact if available
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: uptime-log
           path: uptime-log.json
         # This step will fail if the artifact does not exist yet,
         # so we ignore errors to allow first run without the file
-        continue-on-error: true
+        # continue-on-error: true
 
       - name: Setup Node.js
         uses: actions/download-artifact@v4
