@@ -5,9 +5,11 @@ on:
     - cron: '0 * * * *'  # every hour
   workflow_dispatch:
 
+permissions:
+  contents: write  # ✅ This must be at the top level, not inside jobs
+
 jobs:
-  permissions:
-    contents: write
+
   test:
     runs-on: ubuntu-latest
     env:
