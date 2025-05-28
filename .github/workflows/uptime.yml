@@ -21,17 +21,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download uptime log artifact if available
-        uses: actions/download-artifact@v3
-        with:
-          name: uptime-log
-          path: uptime-log.json
-        # This step will fail if the artifact does not exist yet,
-        # so we ignore errors to allow first run without the file
-        # continue-on-error: true
+      # No more artifact download step needed, because uptime-log.json is in repo
 
       - name: Setup Node.js
-        uses: actions/download-artifact@v4
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
 
@@ -52,8 +45,12 @@ jobs:
       - name: Run uptime analysis
         run: npx ts-node analyse.ts
 
-      - name: Upload uptime log artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: uptime-log
-          path: uptime-log.json
+      - name: Commit and push updated uptime log
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add uptime-log.json
+          git commit -m "Update uptime log [skip ci]" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }} 
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
