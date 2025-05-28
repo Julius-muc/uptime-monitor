@@ -21,6 +21,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Download uptime log artifact if available
+        uses: actions/download-artifact@v3
+        with:
+          name: uptime-log
+          path: ./
+        # This step will fail if the artifact does not exist yet,
+        # so we ignore errors to allow first run without the file
+        continue-on-error: true
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -40,25 +49,11 @@ jobs:
       - name: Run Playwright tests
         run: npx playwright test
 
-      - name: Run uptime analysis and push to uptime-data branch
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+      - name: Run uptime analysis
+        run: npx ts-node analyse.ts
 
-          npx ts-node analyse.ts
-
-          # Only stage the uptime log
-          git add uptime-log.json
-          git commit -m "Update uptime log [skip ci]" || echo "No changes to commit"
-
-          # Stash any other changes (like node_modules)
-          git stash --keep-index
-
-          git fetch origin uptime-data
-          git checkout uptime-data
-          git pull origin uptime-data
-
-          git cherry-pick HEAD@{1} || echo "Nothing to cherry-pick"
-
-          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }} HEAD:uptime-data
-
+      - name: Upload uptime log artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: uptime-log
+          path: uptime-log.json
