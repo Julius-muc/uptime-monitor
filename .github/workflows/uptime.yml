@@ -20,11 +20,22 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Install Playwright Browsers
+      - name: Check permissions on playwright binary
+  run: ls -l node_modules/.bin/playwright
+
+- name: Add execute permission if missing
+  run: chmod +x node_modules/.bin/playwright
+
+- name: Verify permissions fixed
+  run: ls -l node_modules/.bin/playwright
+
+
+
+
+      - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
       - name: Run Playwright tests
         run: npx playwright test
-
