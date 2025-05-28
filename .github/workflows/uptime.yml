@@ -30,7 +30,9 @@ jobs:
         run: npm install
 
       - name: Make Playwright binary executable
-        run: chmod +x node_modules/.bin/playwright
+        run: |
+          chmod +x node_modules/.bin/playwright
+          chmod +x node_modules/.bin/ts-node
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
