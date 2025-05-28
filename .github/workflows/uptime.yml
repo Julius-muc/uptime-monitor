@@ -2,7 +2,7 @@ name: Website Uptime Monitor
 
 on:
   schedule:
-    - cron: '0 * * * *'  # once per hour
+    - cron: '0 * * * *'  # every hour
   workflow_dispatch:
 
 jobs:
@@ -11,8 +11,12 @@ jobs:
     env:
       USERNAME_JULIUS: ${{ secrets.USERNAME_JULIUS }}
       PASSWORD_JULIUS: ${{ secrets.PASSWORD_JULIUS }}
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout uptime-data branch
+        uses: actions/checkout@v3
+        with:
+          ref: uptime-data
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -21,15 +25,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Check permissions on playwright binary
-        run: ls -l node_modules/.bin/playwright
-
-      - name: Add execute permission if missing
-        run: chmod +x node_modules/.bin/playwright
-
-      - name: Verify permissions fixed
-        run: ls -l node_modules/.bin/playwright
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
@@ -40,10 +35,10 @@ jobs:
       - name: Run uptime analysis
         run: npx ts-node analyse.ts
 
-      - name: Upload uptime report
-        uses: actions/upload-artifact@v4
-        with:
-          name: uptime-report
-          path: uptime-log.json
-
-
+      - name: Commit and push updated log
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add uptime-log.json
+          git commit -m "Update uptime log [skip ci]" || echo "No changes to commit"
+          git push origin uptime-data
