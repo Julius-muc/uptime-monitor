@@ -41,7 +41,8 @@ jobs:
         run: npx ts-node analyse.ts
 
       - name: Upload uptime report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
+	uses: actions/download-artifact@v4
         with:
           name: uptime-report
           path: uptime-log.json
