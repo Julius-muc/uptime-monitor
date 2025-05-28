@@ -6,6 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
+  permissions:
+    contents: write
   test:
     runs-on: ubuntu-latest
     env:
