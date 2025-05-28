@@ -43,4 +43,4 @@ jobs:
           git checkout -B uptime-data
           git add uptime-log.json
           git commit -m "Update uptime log [skip ci]" || echo "No changes to commit"
-          git push origin uptime-data
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }} uptime-data
