@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download uptime log artifact if available
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: uptime-log
           path: ./
@@ -31,7 +31,7 @@ jobs:
         continue-on-error: true
 
       - name: Setup Node.js
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           node-version: '18'
 
@@ -53,7 +53,7 @@ jobs:
         run: npx ts-node analyse.ts
 
       - name: Upload uptime log artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: uptime-log
           path: uptime-log.json
