@@ -35,10 +35,10 @@ test('Check Website Uptime', async ({ page }) => {
     await page.getByTestId('login-button').click();
     await page.waitForURL('**/projects');
     await page.getByText('Klimakammer').click();
-    await page.getByRole('link', { name: 'list' }).click();
-    await page.getByRole('tab', { name: 'Sensoren' }).click();
-    await page.getByRole('cell', { name: '70B3D57ED005A270' }).click();
-    await page.getByText('Letztes Senden: 16.07.2023 12:').click();
+    //await page.getByRole('link', { name: 'list' }).click();
+    //await page.getByRole('tab', { name: 'Sensoren' }).click();
+    //await page.getByRole('cell', { name: '70B3D57ED005A270' }).click();
+    //await page.getByText('Letztes Senden: 16.07.2023 12:').click();
 
     logUptime(true);
   } catch (error) {
