@@ -13,10 +13,10 @@ jobs:
       PASSWORD_JULIUS: ${{ secrets.PASSWORD_JULIUS }}
 
     steps:
-      - name: Checkout uptime-data branch
+      - name: Checkout code
         uses: actions/checkout@v3
         with:
-          ref: uptime-data
+          fetch-depth: 0  # Needed to access all branches
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -35,10 +35,12 @@ jobs:
       - name: Run uptime analysis
         run: npx ts-node analyse.ts
 
-      - name: Commit and push updated log
+      - name: Commit and push updated uptime log
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+          git fetch origin
+          git checkout -B uptime-data
           git add uptime-log.json
           git commit -m "Update uptime log [skip ci]" || echo "No changes to commit"
           git push origin uptime-data
