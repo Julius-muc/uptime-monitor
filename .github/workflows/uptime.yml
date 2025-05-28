@@ -23,16 +23,13 @@ jobs:
         run: npm ci
 
       - name: Check permissions on playwright binary
-  run: ls -l node_modules/.bin/playwright
+        run: ls -l node_modules/.bin/playwright
 
-- name: Add execute permission if missing
-  run: chmod +x node_modules/.bin/playwright
+      - name: Add execute permission if missing
+        run: chmod +x node_modules/.bin/playwright
 
-- name: Verify permissions fixed
-  run: ls -l node_modules/.bin/playwright
-
-
-
+      - name: Verify permissions fixed
+        run: ls -l node_modules/.bin/playwright
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
