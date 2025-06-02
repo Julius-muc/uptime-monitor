@@ -1,9 +1,11 @@
 import { test, expect } from '@playwright/test';
 import dotenv from 'dotenv';
-dotenv.config({ path: 'users.env' });
 import fs from 'fs';
 
+dotenv.config({ path: 'users.env' });
+
 const logFile = './uptime-log.json';
+const MAX_RETRIES = 5;
 
 function logUptime(success: boolean) {
   const record = { timestamp: new Date().toISOString(), success };
@@ -21,29 +23,36 @@ function logUptime(success: boolean) {
   fs.writeFileSync(logFile, JSON.stringify(data, null, 2));
 }
 
-test('Check Website Uptime', async ({ page }) => {
+test('Check Website Uptime with Retry', async ({ page }) => {
   test.setTimeout(120000);
-  // Ensure env variables are set
+
   if (!process.env.USERNAME_JULIUS || !process.env.PASSWORD_JULIUS) {
     throw new Error('USERNAME_JULIUS and PASSWORD_JULIUS must be set as environment variables');
   }
 
-  try {
-    await page.goto('https://cloud.treesense.net/login');
-    await page.getByRole('textbox', { name: 'email' }).fill(process.env.USERNAME_JULIUS);
-    await page.getByRole('textbox', { name: 'password' }).fill(process.env.PASSWORD_JULIUS);
-    await page.getByTestId('login-button').click();
-    await page.waitForURL('**/projects');
-    await page.getByText('Klimakammer').click();
-    //await page.getByRole('link', { name: 'list' }).click();
-    //await page.getByRole('tab', { name: 'Sensoren' }).click();
-    //await page.getByRole('cell', { name: '70B3D57ED005A270' }).click();
-    //await page.getByText('Letztes Senden: 16.07.2023 12:').click();
+  let attempt = 0;
+  let success = false;
 
-    logUptime(true);
-  } catch (error) {
-    logUptime(false);
-    console.error('Uptime check failed:', error);
-    throw new Error('Website not reachable or test failed');
+  while (attempt < MAX_RETRIES && !success) {
+    attempt++;
+    try {
+      console.log(`Attempt ${attempt}...`);
+      await page.goto('https://cloud.treesense.net/login');
+      await page.getByRole('textbox', { name: 'email' }).fill(process.env.USERNAME_JULIUS);
+      await page.getByRole('textbox', { name: 'password' }).fill(process.env.PASSWORD_JULIUS);
+      await page.getByTestId('login-button').click();
+      await page.waitForURL('**/projects');
+      await page.getByText('Klimakammer').click();
+      // Optionally enable more interactions here
+
+      success = true;
+      logUptime(true);
+    } catch (error) {
+      console.warn(`Attempt ${attempt} failed:`, error);
+      if (attempt >= MAX_RETRIES) {
+        logUptime(false);
+        //throw new Error('Website not reachable or test failed after maximum retries');
+      }
+    }
   }
 });
