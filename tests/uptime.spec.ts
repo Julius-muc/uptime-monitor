@@ -6,6 +6,7 @@ dotenv.config({ path: 'users.env' });
 
 const logFile = './uptime-log.json';
 const MAX_RETRIES = 5;
+const ATTEMPT_TIMEOUT_MS = 30000; // 30 seconds per attempt
 
 function logUptime(success: boolean) {
   const record = { timestamp: new Date().toISOString(), success };
@@ -24,7 +25,7 @@ function logUptime(success: boolean) {
 }
 
 test('Check Website Uptime with Retry', async ({ page }) => {
-  test.setTimeout(120000);
+  test.setTimeout(5 * ATTEMPT_TIMEOUT_MS + 10000); // total timeout buffer
 
   if (!process.env.USERNAME_JULIUS || !process.env.PASSWORD_JULIUS) {
     throw new Error('USERNAME_JULIUS and PASSWORD_JULIUS must be set as environment variables');
@@ -37,18 +38,29 @@ test('Check Website Uptime with Retry', async ({ page }) => {
     attempt++;
     try {
       console.log(`Attempt ${attempt}...`);
-      await page.goto('https://cloud.treesense.net/login');
-      await page.getByRole('textbox', { name: 'email' }).fill(process.env.USERNAME_JULIUS);
-      await page.getByRole('textbox', { name: 'password' }).fill(process.env.PASSWORD_JULIUS);
-      await page.getByTestId('login-button').click();
-      await page.waitForURL('**/projects');
-      await page.getByText('Klimakammer').click();
-      // Optionally enable more interactions here
 
-      success = true;
-      logUptime(true);
+      await Promise.race([
+        (async () => {
+          await page.goto('https://cloud.treesense.net/login');
+          await page.getByRole('textbox', { name: 'email' }).fill(process.env.USERNAME_JULIUS);
+          await page.getByRole('textbox', { name: 'password' }).fill(process.env.PASSWORD_JULIUS);
+          await page.getByTestId('login-button').click();
+          await page.waitForURL('**/projects');
+          await page.getByText('Klimakammer').click();
+          await page.locator('.d-flex > button').first().click();
+          await page.getByRole('link', { name: 'list' }).click();
+          await page.getByRole('tab', { name: 'Sensoren' }).click();
+          await page.getByRole('cell', { name: '70B3D57ED005A270' }).click();
+          await page.getByText('Letztes Senden: 16.07.2023 12:').click();
+          success = true;
+          logUptime(true);
+        })(),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Attempt timed out')), ATTEMPT_TIMEOUT_MS)
+        ),
+      ]);
     } catch (error) {
-      console.warn(`Attempt ${attempt} failed:`, error);
+      console.warn(`Attempt ${attempt} failed:`, error.message);
       if (attempt >= MAX_RETRIES) {
         logUptime(false);
         //throw new Error('Website not reachable or test failed after maximum retries');
