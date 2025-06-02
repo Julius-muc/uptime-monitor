@@ -14,11 +14,17 @@ try {
   process.exit(1);
 }
 
-function uptimePercent(days: number) {
+function uptimePercent(days: number, name: 'api' | 'cloud' | 'website') {
   const since = Date.now() - days * 24 * 60 * 60 * 1000;
-  const filtered = data.filter((r: any) => new Date(r.timestamp).getTime() >= since);
+
+  const filtered = data.filter((r: any) => {
+    const ts = new Date(r.timestamp).getTime();
+    return ts >= since && r.hasOwnProperty(name);
+  });
+
   const total = filtered.length;
-  const up = filtered.filter((r: any) => r.success).length;
+  const up = filtered.filter((r: any) => r[name] === true).length;
+
   return total > 0 ? (up / total) * 100 : 0;
 }
 
@@ -58,17 +64,34 @@ function buildPayload(type: 'card' | 'adaptive', title: string, text: string) {
 
 
 async function sendToTeams() {
-  const uptime30 = uptimePercent(30).toFixed(2);
-  const uptime100 = uptimePercent(100).toFixed(2);
-  const uptime365 = uptimePercent(365).toFixed(2);
+  const c_uptime30 = uptimePercent(30,'cloud').toFixed(2);
+  const c_uptime100 = uptimePercent(100,'cloud').toFixed(2);
+  const c_uptime365 = uptimePercent(365,'cloud').toFixed(2);
+
+  const w_uptime30 = uptimePercent(30,'website').toFixed(2);
+  const w_uptime100 = uptimePercent(100,'website').toFixed(2);
+  const w_uptime365 = uptimePercent(365,'website').toFixed(2);
+
+  const a_uptime30 = uptimePercent(30,'api').toFixed(2);
+  const a_uptime100 = uptimePercent(100,'api').toFixed(2);
+  const a_uptime365 = uptimePercent(365,'api').toFixed(2);
 
   const title = "Uptime Report";
   const text = [
-    `Uptime letzte 30 Tage: ${uptime30}%`,
-    `Uptime letzte 100 Tage: ${uptime100}%`,
-    `Uptime letzte 365 Tage: ${uptime365}%`
-  ].join('\n');
+  "**📊 Cloud Übersicht:**",
+  `• *Letzte 30 Tage:* ${c_uptime30}%`,
+  `• *Letzte 100 Tage:* ${c_uptime100}%`,
+  `• *Letzte 365 Tage:* ${c_uptime365}%`,
+  "**📊 Website Übersicht:**",
+  `• *Letzte 30 Tage:* ${w_uptime30}%`,
+  `• *Letzte 100 Tage:* ${w_uptime100}%`,
+  `• *Letzte 365 Tage:* ${w_uptime365}%`,
+  "**📊 API Übersicht:**",
+  `• *Letzte 30 Tage:* ${a_uptime30}%`,
+  `• *Letzte 100 Tage:* ${a_uptime100}%`,
+  `• *Letzte 365 Tage:* ${a_uptime365}%`
 
+].join('\n\n');
 const payload = {
   "type": "message",
   "attachments": [
