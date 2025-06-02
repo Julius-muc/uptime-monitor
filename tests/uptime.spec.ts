@@ -33,16 +33,19 @@ test('Check Website Uptime with Retry', async ({ page }) => {
 
   let attempt = 0;
   let success = false;
+  let loggedIn = false;
 
   while (attempt < MAX_RETRIES && !success) {
     attempt++;
     try {
       console.log(`Attempt ${attempt}...`);
 
-      await Promise.race([
-        (async () => {
-          console.log('Loading cloud.treesense.net');
-          await page.goto('https://cloud.treesense.net/login');
+     await Promise.race([
+      (async () => {
+        console.log('Loading cloud.treesense.net');
+        await page.goto('https://cloud.treesense.net/login');
+
+        if (!loggedIn) {
           console.log('Typing User');
           await page.getByRole('textbox', { name: 'email' }).fill(process.env.USERNAME_JULIUS);
           console.log('Typing password');
@@ -51,20 +54,24 @@ test('Check Website Uptime with Retry', async ({ page }) => {
           await page.getByTestId('login-button').click();
           console.log('waiting for loading of projects');
           await page.waitForURL('**/projects');
-          console.log('Waiting for Klimakammer');
-          await page.getByText('Klimakammer').click();
-          console.log('Clicking Klimakammer button');
-          await page.locator('.d-flex > button').first().click();
-          console.log('Clicking list button');
-          await page.getByRole('link', { name: 'list' }).click();
-          console.log('Clicking sensoren button');
-          await page.getByRole('tab', { name: 'Sensoren' }).click();
-          console.log('Clicking 70B3D57ED005A270 button');
-          await page.getByRole('cell', { name: '70B3D57ED005A270' }).click();
-          console.log('Get letztes senden');
-          await page.getByText('Letztes Senden: 16.07.2023 12:').click();
-          success = true;
-          logUptime(true);
+          loggedIn = true;
+        }
+
+        console.log('Waiting for Klimakammer');
+        await page.getByText('Klimakammer').click();
+        console.log('Clicking Klimakammer button');
+        await page.locator('.d-flex > button').first().click();
+        console.log('Clicking list button');
+        await page.getByRole('link', { name: 'list' }).click();
+        console.log('Clicking sensoren button');
+        await page.getByRole('tab', { name: 'Sensoren' }).click();
+        console.log('Clicking 70B3D57ED005A270 button');
+        await page.getByRole('cell', { name: '70B3D57ED005A270' }).click();
+        console.log('Get letztes senden');
+        await page.getByText('Letztes Senden: 16.07.2023 12:').click();
+
+        success = true;
+        logUptime(true);
         })(),
         new Promise((_, reject) =>
           setTimeout(() => reject(new Error('Attempt timed out')), ATTEMPT_TIMEOUT_MS)
