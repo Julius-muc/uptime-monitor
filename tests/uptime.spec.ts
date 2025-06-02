@@ -41,16 +41,27 @@ test('Check Website Uptime with Retry', async ({ page }) => {
 
       await Promise.race([
         (async () => {
+          console.log('Loading cloud.treesense.net');
           await page.goto('https://cloud.treesense.net/login');
+          console.log('Typing User');
           await page.getByRole('textbox', { name: 'email' }).fill(process.env.USERNAME_JULIUS);
+          console.log('Typing password');
           await page.getByRole('textbox', { name: 'password' }).fill(process.env.PASSWORD_JULIUS);
+          console.log('Clicking login button');
           await page.getByTestId('login-button').click();
+          console.log('waiting for loading of projects');
           await page.waitForURL('**/projects');
+          console.log('Waiting for Klimakammer');
           await page.getByText('Klimakammer').click();
+          console.log('Clicking Klimakammer button');
           await page.locator('.d-flex > button').first().click();
+          console.log('Clicking list button');
           await page.getByRole('link', { name: 'list' }).click();
+          console.log('Clicking sensoren button');
           await page.getByRole('tab', { name: 'Sensoren' }).click();
+          console.log('Clicking 70B3D57ED005A270 button');
           await page.getByRole('cell', { name: '70B3D57ED005A270' }).click();
+          console.log('Get letztes senden');
           await page.getByText('Letztes Senden: 16.07.2023 12:').click();
           success = true;
           logUptime(true);
