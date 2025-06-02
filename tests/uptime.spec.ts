@@ -68,7 +68,7 @@ test('Check Website Uptime with Retry', async ({ page }) => {
         console.log('Clicking 70B3D57ED005A270 button');
         await page.getByRole('cell', { name: '70B3D57ED005A270' }).click();
         console.log('Get letztes senden');
-        await page.getByText('Letztes Senden: 16.07.2023 12:').click();
+        await page.getByText(/Letztes Senden: \d{2}\.\d{2}\.\d{4} \d{2}:/).click();
 
         success = true;
         logUptime(true);
