@@ -76,6 +76,10 @@ async function sendToTeams() {
   const a_uptime100 = uptimePercent(100,'api').toFixed(2);
   const a_uptime365 = uptimePercent(365,'api').toFixed(2);
 
+  const avg_uptime30 = ((+c_uptime30 + +w_uptime30 + +a_uptime30) / 3).toFixed(2);
+  const avg_uptime100 = ((+c_uptime100 + +w_uptime100 + +a_uptime100) / 3).toFixed(2);
+  const avg_uptime365 = ((+c_uptime365 + +w_uptime365 + +a_uptime365) / 3).toFixed(2);
+
   const title = "Uptime Report";
   const text = [
   "**📊 Cloud Übersicht:**",
@@ -89,7 +93,11 @@ async function sendToTeams() {
   "**📊 API Übersicht:**",
   `• *Letzte 30 Tage:* ${a_uptime30}%`,
   `• *Letzte 100 Tage:* ${a_uptime100}%`,
-  `• *Letzte 365 Tage:* ${a_uptime365}%`
+  `• *Letzte 365 Tage:* ${a_uptime365}%`,
+  "**📊 Insgesamt Übersicht:**",
+  `• *Letzte 30 Tage:* ${avg_uptime30}%`,
+  `• *Letzte 100 Tage:* ${avg_uptime100}%`,
+  `• *Letzte 365 Tage:* ${avg_uptime365}%`
 
 ].join('\n\n');
 const payload = {
