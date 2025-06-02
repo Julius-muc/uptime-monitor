@@ -36,8 +36,16 @@ jobs:
           chmod +x node_modules/.bin/playwright
           chmod +x node_modules/.bin/ts-node
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-browsers-${{ runner.os }}-
+
+      - name: Install Playwright browsers (from cache or install if missing)
+        run: npx playwright install
 
       - name: Run Playwright tests
         run: npx playwright test
