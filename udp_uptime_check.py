@@ -23,8 +23,8 @@ three_min_ago_str = three_min_ago.strftime("%Y/%m/%d %H:%M:%S")
 # Final payload
 udp_payload = {"IMEI":"AAAAAAAAAAAAAA3","IMSI":"901405119966222","Model":"RS485-NB","Payload":"01e8fde8fde8fde8fd34210100","battery":3.614,"signal":26,"time":"2025/04/09 10:53:26","1":["01e8fde8fde8fde8fd34210100","2025/04/09 10:52:30"],"2":["01e8fde8fde8fde8fd34210100","2025/04/09 09:51:30"],"3":["01e8fde8fde8fde8fd34210100","2025/04/09 09:50:30"]}
 
-INFLUX_URL = "https://influx.treesense.net"
-INFLUX_TOKEN = "W-6bVxbFRmVLb7vpVICr12b1MmJ2YXIEE593OuG5zes_tMt4DFKnnTYevjDseJ9W5xwjBaAEu8oPqVErma8DUQ=="
+INFLUX_URL = os.getenv("INFLUX_NAME")
+INFLUX_TOKEN = os.getenv("INFLUX_API")
 INFLUX_ORG = "treesense"
 INFLUX_BUCKET = "sensor_data"
 IMEI = "AAAAAAAAAAAAAA3"
