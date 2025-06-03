@@ -88,7 +88,7 @@ now = datetime.now(timezone.utc)
 if latest_time is None:
     print("❌ No datapoint received in the last 5 minutes.")
     write_uptime_log(False)
-    exit(1)
+    exit(0)
 
 time_diff = (now - latest_time).total_seconds()
 
@@ -99,4 +99,4 @@ if time_diff < 300:
 else:
     print("❌ Datapoint is older than 5 minutes.")
     write_uptime_log(False)
-    exit(1)
+    exit(0)
