@@ -114,11 +114,11 @@ if latest_time is None:
 
 time_diff = (now - latest_time).total_seconds()
 
-if time_diff < 300:
-    print("✅ Datapoint received within the last 5 minutes.")
+if time_diff < 14400:
+    print("✅ Datapoint received within the last 4 hours.")
     write_uptime_log(True)
     exit(0)
 else:
-    print("❌ Datapoint is older than 5 minutes.")
+    print("❌ Datapoint is older than 4 hours.")
     write_uptime_log(False)
     exit(0)
