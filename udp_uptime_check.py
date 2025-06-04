@@ -82,7 +82,7 @@ query_api = client.query_api()
 
 query = f'''
 from(bucket: "{INFLUX_BUCKET}")
-  |> range(start: -5m)
+  |> range(start: -4h)
   |> filter(fn: (r) => r["imei"] == "{IMEI}")
   |> filter(fn: (r) => r["_field"] == "signal")
   |> sort(columns: ["_time"], desc: true)
