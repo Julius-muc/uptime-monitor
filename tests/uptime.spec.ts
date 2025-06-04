@@ -87,6 +87,7 @@ test('Check Cloud Uptime with Retry', async ({ page }) => {
 });
 
 test('Check Main Website Uptime', async ({ page }) => {
+  test.setTimeout(5 * ATTEMPT_TIMEOUT_MS + 10000); // total timeout buffer
   let website = false;
   let attempt = 0;
 
@@ -116,6 +117,7 @@ test('Check Main Website Uptime', async ({ page }) => {
 
 
 test('Check API Uptime', async ({ browser }) => {
+  test.setTimeout(5 * ATTEMPT_TIMEOUT_MS + 10000); // total timeout buffer
   let api = false;
   let attempt = 0;
 
