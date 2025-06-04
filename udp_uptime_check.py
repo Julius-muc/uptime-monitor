@@ -77,10 +77,17 @@ from(bucket: "{INFLUX_BUCKET}")
 tables = query_api.query(query)
 latest_time = None
 
-for table in tables:
-    for record in table.records:
-        latest_time = record.get_time()
-        print(f"Latest signal time: {latest_time.isoformat()}")
+try:
+    tables = query_api.query(query)
+    for table in tables:
+        for record in table.records:
+            latest_time = record.get_time()
+            print(f"Latest signal time: {latest_time.isoformat()}")
+
+except (ReadTimeoutError, ApiException, Exception) as e:
+    print(f"⚠️ InfluxDB query failed or timed out: {str(e)}")
+    write_uptime_log(False)
+    exit(0)
 
 # ----------- STEP 3: VERIFY TIMESTAMP -----------
 
