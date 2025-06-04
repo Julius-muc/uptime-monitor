@@ -16,13 +16,28 @@ three_min_ago = now - timedelta(minutes=3)
 
 UPTIME_LOG_FILE = "uptime-log.json"
 
-# Format as "YYYY/MM/DD HH:MM:SS"
+# Get current time and round down to the hour
+now = datetime.now().replace(minute=0, second=0, microsecond=0)
+
+# Format timestamps
 now_str = now.strftime("%Y/%m/%d %H:%M:%S")
-three_min_ago_str = three_min_ago.strftime("%Y/%m/%d %H:%M:%S")
+one_hour_ago_str = (now - timedelta(hours=1)).strftime("%Y/%m/%d %H:%M:%S")
+two_hours_ago_str = (now - timedelta(hours=2)).strftime("%Y/%m/%d %H:%M:%S")
+three_hours_ago_str = (now - timedelta(hours=3)).strftime("%Y/%m/%d %H:%M:%S")
 
 # Final payload
-udp_payload = {"IMEI":"AAAAAAAAAAAAAA3","IMSI":"901405119966222","Model":"RS485-NB","Payload":"01e8fde8fde8fde8fd34210100","battery":3.614,"signal":26,"time":"2025/04/09 10:53:26","1":["01e8fde8fde8fde8fd34210100","2025/04/09 10:52:30"],"2":["01e8fde8fde8fde8fd34210100","2025/04/09 10:51:30"],"3":["01e8fde8fde8fde8fd34210100","2025/04/09 10:50:30"]}
-
+udp_payload = {
+    "IMEI": "AAAAAAAAAAAAAA3",
+    "IMSI": "901405119966222",
+    "Model": "RS485-NB",
+    "Payload": "01e8fde8fde8fde8fd34210100",
+    "battery": 3.614,
+    "signal": 26,
+    "time": now_str,
+    "1": ["01e8fde8fde8fde8fd34210100", one_hour_ago_str],
+    "2": ["01e8fde8fde8fde8fd34210100", two_hours_ago_str],
+    "3": ["01e8fde8fde8fde8fd34210100", three_hours_ago_str]
+}
 INFLUX_URL = os.getenv("INFLUX_NAME")
 INFLUX_TOKEN = os.getenv("INFLUX_API")
 INFLUX_ORG = "treesense"
