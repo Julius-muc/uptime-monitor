@@ -76,23 +76,23 @@ sock.close()
 time.sleep(5)
 
 # ----------- STEP 2: QUERY INFLUXDB -----------
-
-client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG)
-query_api = client.query_api()
-
-query = f'''
-from(bucket: "{INFLUX_BUCKET}")
-  |> range(start: -4h)
-  |> filter(fn: (r) => r["imei"] == "{IMEI}")
-  |> filter(fn: (r) => r["_field"] == "signal")
-  |> sort(columns: ["_time"], desc: true)
-  |> limit(n:1)
-'''
-
-tables = query_api.query(query)
-latest_time = None
-
 try:
+    client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG)
+    query_api = client.query_api()
+    
+    query = f'''
+    from(bucket: "{INFLUX_BUCKET}")
+      |> range(start: -4h)
+      |> filter(fn: (r) => r["imei"] == "{IMEI}")
+      |> filter(fn: (r) => r["_field"] == "signal")
+      |> sort(columns: ["_time"], desc: true)
+      |> limit(n:1)
+    '''
+    
+    tables = query_api.query(query)
+    latest_time = None
+
+
     tables = query_api.query(query)
     for table in tables:
         for record in table.records:
