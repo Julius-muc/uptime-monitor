@@ -68,7 +68,7 @@ test('Check Cloud Uptime with Retry', async ({ page }) => {
           console.log('Clicking 70B3D57ED005A270 button');
           await page.getByRole('cell', { name: '70B3D57ED005A270' }).click();
           console.log('Get letztes senden 16');
-          await page.getByText('Zeit').click();
+          await page.getByRole('cell', { name: '3.317 V' }).first().click();
 
           cloud = true;
           logUptime({ cloud });
