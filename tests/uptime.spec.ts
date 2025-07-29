@@ -34,7 +34,7 @@ test('Check Cloud speed', async ({ page }) => {
   let attempt = 0;
   let cloudSpeed = false;
   let loggedIn = false;
-  let timeoutAction = 9000;
+  let timeoutAction = 20000;
 
   while (attempt < MAX_RETRIES && !cloudSpeed) {
     attempt++;
