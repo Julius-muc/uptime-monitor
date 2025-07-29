@@ -34,7 +34,7 @@ test('Check Cloud speed', async ({ page }) => {
   let attempt = 0;
   let cloudSpeed = false;
   let loggedIn = false;
-  let timeoutAction = 20000;
+  let timeoutAction = 5000;
 
   while (attempt < MAX_RETRIES && !cloudSpeed) {
     attempt++;
@@ -68,8 +68,10 @@ test('Check Cloud speed', async ({ page }) => {
           await page.getByRole('tab', { name: 'Sensoren' }).click({ timeout: timeoutAction });
           console.log('Clicking 70B3D57ED005A270 button');
           await page.getByRole('cell', { name: '70B3D57ED005A270' }).click({ timeout: timeoutAction });
-          console.log('Get letztes senden');
-          await page.getByRole('cell', { name: 'Sonntag, 16. Juli 2023 um 12:19' }).click({ timeout: timeoutAction });
+          //console.log('Get letztes senden');
+          console.log('Get letztes senden 16');
+          await page.getByRole('cell', { name: '3.317 V' }).first().click({ timeout: timeoutAction });
+          //await page.getByRole('cell', { name: 'Sonntag, 16. Juli 2023 um 12:19' }).click({ timeout: timeoutAction });
 
           cloudSpeed = true;
           logUptime({ cloudSpeed });
