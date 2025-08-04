@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import fetch from 'node-fetch'; // Ensure using node-fetch v2
 
 const LOG_FILE = './uptime-log.json';
-const TEAMS_WEBHOOK_URL = 'https://prod-255.westeurope.logic.azure.com:443/workflows/7020544885b54b19b5a86afeeb3cdebe/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=j5o2PvVtQGcgFFQiFUhnBCgr6XYSvaMht42p3QQGMTo';;
+const TEAMS_WEBHOOK_URL = 'https://prod-255.westeurope.logic.azure.com:443/workflows/7020544885b54b19b5a86afeeb3cdebe/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=j5o2PvVtQGcgFFQiFUhnBCgr6XYSvaMht42p3QQGMTo';
 
 let data: any[] = [];
 try {
@@ -24,6 +24,12 @@ function getAllServiceKeys(): string[] {
   return Array.from(keys);
 }
 
+function isUptime(value: any): boolean {
+  if (typeof value === 'boolean') return value === true;
+  if (typeof value === 'number') return value < 5000;
+  return false;
+}
+
 function uptimePercent(days: number, serviceName: string): number {
   const since = Date.now() - days * 24 * 60 * 60 * 1000;
 
@@ -33,7 +39,7 @@ function uptimePercent(days: number, serviceName: string): number {
   });
 
   const total = filtered.length;
-  const up = filtered.filter((r: any) => r[serviceName] === true).length;
+  const up = filtered.filter((r: any) => isUptime(r[serviceName])).length;
 
   return total > 0 ? (up / total) * 100 : 0;
 }
