@@ -35,21 +35,31 @@ test('Check Cloud speed', async ({ page }) => {
   let maxDuration = 0;
   let timeoutExceeded = false;
 
-  const measure = async (label: string, fn: () => Promise<void>) => {
-    if (timeoutExceeded) {
-      console.log(`Skipping ${label} because max duration was exceeded.`);
-      return;
-    }
-    const start = Date.now();
+const measure = async (label: string, fn: () => Promise<void>) => {
+  if (timeoutExceeded) {
+    console.log(`Skipping ${label} because max duration was exceeded.`);
+    return;
+  }
+  const start = Date.now();
+  try {
     await fn();
+  } catch (e) {
     const duration = Date.now() - start;
-    console.log(`${label} took ${duration}ms`);
+    console.warn(`${label} failed or was aborted after ${duration}ms`);
     maxDuration = Math.max(maxDuration, duration);
     if (duration > MAX_ALLOWED_DURATION) {
-      console.warn(`${label} exceeded max allowed duration: ${duration}ms`);
       timeoutExceeded = true;
     }
-  };
+    throw e; // optional: weiterwerfen, wenn du willst, dass echte Fehler trotzdem den Test failen
+  }
+  const duration = Date.now() - start;
+  console.log(`${label} took ${duration}ms`);
+  maxDuration = Math.max(maxDuration, duration);
+  if (duration > MAX_ALLOWED_DURATION) {
+    console.warn(`${label} exceeded max allowed duration: ${duration}ms`);
+    timeoutExceeded = true;
+  }
+};
 
   try {
     await measure('Goto login page', async () => {
