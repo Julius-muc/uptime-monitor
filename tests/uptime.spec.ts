@@ -62,6 +62,7 @@ const measure = async (label: string, fn: () => Promise<void>) => {
 };
 
   try {
+    const start = Date.now();
     await measure('Goto login page', async () => {
       await page.goto('https://cloud.treesense.net/login');
     });
@@ -105,13 +106,16 @@ const measure = async (label: string, fn: () => Promise<void>) => {
     await measure('Click Spannung cell', async () => {
       await page.getByRole('cell', { name: '3.317 V' }).first().click();
     });
-
+    const duration = Date.now() - start;
     // Log max duration capped at MAX_ALLOWED_DURATION
-    logUptime({ cloudSpeed: maxDuration > MAX_ALLOWED_DURATION ? MAX_ALLOWED_DURATION : maxDuration });
+    logUptime({ cloudSpeedSingle: maxDuration > MAX_ALLOWED_DURATION ? MAX_ALLOWED_DURATION : maxDuration });
+    logUptime({ cloudSpeedAll: duration });
 
   } catch (error) {
     console.error('Test failed:', error.message);
-    logUptime({ cloudSpeed: maxDuration > MAX_ALLOWED_DURATION ? MAX_ALLOWED_DURATION : maxDuration });
+    const duration = Date.now() - start;
+    logUptime({ cloudSpeedSingle: maxDuration > MAX_ALLOWED_DURATION ? MAX_ALLOWED_DURATION : maxDuration });
+    logUptime({ cloudSpeedAll: duration });
     throw error; // Still throw to mark test as failed if something else goes wrong
   }
 });
