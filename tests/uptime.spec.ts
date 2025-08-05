@@ -60,9 +60,9 @@ const measure = async (label: string, fn: () => Promise<void>) => {
     timeoutExceeded = true;
   }
 };
-
+  const start = Date.now();
   try {
-    const start = Date.now();
+    //const start = Date.now();
     await measure('Goto login page', async () => {
       await page.goto('https://cloud.treesense.net/login');
     });
