@@ -106,7 +106,9 @@ def query_influx_for_imei(imei: str, field: str = "signal", time_range: str = "-
     return latest_time
 
 def simulate_ttn_uplink():
-    now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    now_dt = datetime.now(timezone.utc)  # keep as datetime
+    now_str = now_dt.isoformat().replace("+00:00", "Z")  # string format for TTN
+    now_ts = int(now_dt.timestamp())  # integer timestamp
     payload = {
         "end_device_ids": {
             "device_id": TTN_DEVICE_ID,
@@ -116,7 +118,7 @@ def simulate_ttn_uplink():
             "dev_addr": "260B3523"
         },
         "correlation_ids": ["gs:uplink:01K1ZED8R4AV6STYN959VQS6V6"],
-        "received_at": now.isoformat(),
+        "received_at": now_str,
         "uplink_message": {
             "session_key_id": "AYxdn/mH/5t4ycMmHWkE/A==",
             "f_port": 1,
@@ -134,15 +136,15 @@ def simulate_ttn_uplink():
                         "gateway_id": "eui-a84041ffff2657ac",
                         "eui": "A84041FFFF2657AC"
                     },
-                    "time": now.isoformat(),
-                    "timestamp": int(now.timestamp()),
+                    "time": now_str,
+                    "timestamp": now_ts,
                     "rssi": -116,
                     "channel_rssi": -116,
                     "snr": -10.2,
                     "frequency_offset": "-2631",
                     "uplink_token": "CiIKIAoUZXVpLWE4NDA0MWZmZmYyNjU3YWMSCKhAQf//JlesEN2wr90DGgwItNnMxAYQiqfh2gMgyNaUupHzigE=",
                     "channel_index": 6,
-                    "received_at": now.isoformat()
+                    "received_at": now_str
                 }
             ],
             "settings": {
@@ -154,10 +156,10 @@ def simulate_ttn_uplink():
                     }
                 },
                 "frequency": "867700000",
-                "timestamp": int(now.timestamp()),
-                "time": now.isoformat()
+                "timestamp": now_ts,
+                "time": now_str
             },
-            "received_at": now.isoformat(),
+            "received_at": now_str,
             "consumed_airtime": "0.370688s",
             "packet_error_rate": 0.09090909,
             "network_ids": {
