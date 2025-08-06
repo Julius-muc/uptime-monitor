@@ -25,48 +25,58 @@ function logUptime(entry: Record<string, boolean>) {
 }
 
 test('Check Cloud speed', async ({ page }) => {
-  test.setTimeout(25000); // Give some buffer
+  const GLOBAL_TIMEOUT = 25_000; // 25 seconds in milliseconds
+  const globalStart = Date.now();
 
-  if (!process.env.USERNAME_JULIUS || !process.env.PASSWORD_JULIUS) {
-    throw new Error('USERNAME_JULIUS and PASSWORD_JULIUS must be set as environment variables');
-  }
+  const timeoutPromise = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error(`Global timeout of ${GLOBAL_TIMEOUT}ms exceeded`)), GLOBAL_TIMEOUT)
+  );
 
-  const MAX_ALLOWED_DURATION = 15000;
-  let maxDuration = 0;
-  let timeoutExceeded = false;
-
-  let taskCounter = 1;
-  const durations: { number: number; label: string; duration: number }[] = [];
-
-  const measure = async (label: string, fn: () => Promise<void>) => {
-    const taskNumber = taskCounter++;
-    if (timeoutExceeded) {
-      console.log(`Skipping ${taskNumber}. ${label} because max duration was exceeded.`);
-      return;
+  const testLogic = (async () => {
+    if (!process.env.USERNAME_JULIUS || !process.env.PASSWORD_JULIUS) {
+      throw new Error('USERNAME_JULIUS and PASSWORD_JULIUS must be set as environment variables');
     }
-    const start = Date.now();
-    try {
-      await fn();
-    } catch (e) {
+
+    const MAX_ALLOWED_DURATION = 15000;
+    let maxDuration = 0;
+    let timeoutExceeded = false;
+
+    let taskCounter = 1;
+    const durations: { number: number; label: string; duration: number }[] = [];
+
+    const measure = async (label: string, fn: () => Promise<void>) => {
+      const taskNumber = taskCounter++;
+
+      if (timeoutExceeded) {
+        console.log(`Skipping ${taskNumber}. ${label} because max duration was exceeded.`);
+        return;
+      }
+
+      const start = Date.now();
+      try {
+        await fn();
+      } catch (e: any) {
+        const duration = Date.now() - start;
+        console.warn(`${taskNumber}. ${label} failed or was aborted after ${duration}ms`);
+        durations.push({ number: taskNumber, label, duration });
+        maxDuration = Math.max(maxDuration, duration);
+        if (duration > MAX_ALLOWED_DURATION) timeoutExceeded = true;
+        console.warn('Click Spannung cell failed but test will continue:', e.message);
+        return;
+      }
+
       const duration = Date.now() - start;
-      console.warn(`${taskNumber}. ${label} failed or was aborted after ${duration}ms`);
+      console.log(`${taskNumber}. ${label} took ${duration}ms`);
       durations.push({ number: taskNumber, label, duration });
       maxDuration = Math.max(maxDuration, duration);
-      if (duration > MAX_ALLOWED_DURATION) timeoutExceeded = true;
-      console.warn('Click Spannung cell failed but test will continue:', e.message);
-    }
-    const duration = Date.now() - start;
-    console.log(`${taskNumber}. ${label} took ${duration}ms`);
-    durations.push({ number: taskNumber, label, duration });
-    maxDuration = Math.max(maxDuration, duration);
-    if (duration > MAX_ALLOWED_DURATION) {
-      console.warn(`${taskNumber}. ${label} exceeded max allowed duration: ${duration}ms`);
-      timeoutExceeded = true;
-    }
-  };
+      if (duration > MAX_ALLOWED_DURATION) {
+        console.warn(`${taskNumber}. ${label} exceeded max allowed duration: ${duration}ms`);
+        timeoutExceeded = true;
+      }
+    };
 
-  const start = Date.now();
-  try {
+    const start = Date.now();
+
     await measure('Goto login page', async () => {
       await page.goto('https://cloud.treesense.net/login');
     });
@@ -119,23 +129,20 @@ test('Check Cloud speed', async ({ page }) => {
     logUptime({ cloudSpeedSingle: maxDuration > MAX_ALLOWED_DURATION ? MAX_ALLOWED_DURATION : maxDuration });
     logUptime({ cloudSpeedAll: duration });
     logUptime({ LongestAction: longest.number });
+  })();
 
-  } catch (error) {
-    console.error('Test failed:', error.message);
-    const duration = Date.now() - start;
+  try {
+    await Promise.race([testLogic, timeoutPromise]);
+  } catch (error: any) {
+    const duration = Date.now() - globalStart;
+    console.error('Test caught an error (possibly timeout):', error.message);
 
-    const longest = durations.reduce((a, b) => (a.duration > b.duration ? a : b), {
-      number: -1,
-      label: 'none',
-      duration: 0,
-    });
-    console.log(`\nLongest step before failure: ${longest.number}. ${longest.label} (${longest.duration}ms)\n`);
-
-    logUptime({ cloudSpeedSingle: maxDuration > MAX_ALLOWED_DURATION ? MAX_ALLOWED_DURATION : maxDuration });
+    logUptime({ cloudSpeedSingle: Math.min(duration, 15000) });
     logUptime({ cloudSpeedAll: duration });
-    logUptime({ LongestAction: longest.number });
+    logUptime({ LongestAction: -1 }); // Optional: indicates timeout or unknown
   }
 });
+
 
 
 test('Check Cloud Uptime with Retry', async ({ page }) => {
