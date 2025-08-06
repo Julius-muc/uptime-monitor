@@ -51,12 +51,12 @@ def send_udp_packet():
         "battery": 3.614,
         "signal": 26,
         "time": now_strr,
-        "1": ["01e8fde8fde8fde8fd34210100", one_hour_ago_str],
-        "2": ["01e8fde8fde8fde8fd34210100", two_hours_ago_str],
-        "3": ["01e8fde8fde8fde8fd34210100", three_hours_ago_str]
+        "1": ["01e8fde8fde8fde8fd34210100", now_strr],
+        "2": ["01e8fde8fde8fde8fd34210100", one_hour_ago_str],
+        "3": ["01e8fde8fde8fde8fd34210100", two_hours_ago_str]
     }
 
-    print(f"Sending UDP packet to {UDP_IP}:{UDP_PORT}")
+    print(f"Sending UDP packet to {UDP_IP}: {udp_payload}")
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(json.dumps(udp_payload).encode('utf-8'), (UDP_IP, UDP_PORT))
     sock.close()
