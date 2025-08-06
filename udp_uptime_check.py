@@ -106,7 +106,7 @@ def query_influx_for_imei(imei: str, field: str = "signal", time_range: str = "-
     return latest_time
 
 def simulate_ttn_uplink():
-    now = datetime.now(timezone.utc)
+    now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     payload = {
         "end_device_ids": {
             "device_id": TTN_DEVICE_ID,
