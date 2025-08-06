@@ -38,7 +38,7 @@ def send_udp_packet():
     nowr = datetime.now()
     now = datetime.now().replace(minute=0, second=0, microsecond=0)
     now_str = now.strftime("%Y/%m/%d %H:%M:%S")
-    now_strr = now.strftime("%Y/%m/%d %H:%M:%S")
+    now_strr = nowr.strftime("%Y/%m/%d %H:%M:%S")
     one_hour_ago_str = (now - timedelta(hours=1)).strftime("%Y/%m/%d %H:%M:%S")
     two_hours_ago_str = (now - timedelta(hours=2)).strftime("%Y/%m/%d %H:%M:%S")
     three_hours_ago_str = (now - timedelta(hours=3)).strftime("%Y/%m/%d %H:%M:%S")
@@ -51,9 +51,9 @@ def send_udp_packet():
         "battery": 3.614,
         "signal": 26,
         "time": now_strr,
-        "1": ["01e8fde8fde8fde8fd34210100", now_strr],
-        "2": ["01e8fde8fde8fde8fd34210100", one_hour_ago_str],
-        "3": ["01e8fde8fde8fde8fd34210100", two_hours_ago_str]
+        "1": ["01e8fde8fde8fde8fd34210100", one_hour_ago_str],
+        "2": ["01e8fde8fde8fde8fd34210100", two_hours_ago_str],
+        "3": ["01e8fde8fde8fde8fd34210100", three_hours_ago_str]
     }
 
     print(f"Sending UDP packet to {UDP_IP}: {udp_payload}")
