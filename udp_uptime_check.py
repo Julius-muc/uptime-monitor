@@ -189,7 +189,7 @@ def simulate_ttn_uplink():
     time.sleep(10)
     return True
 
-def query_influx_for_ttn_dev(dev_eui: str, field: str = "field1", time_range: str = "-4h", device_id_field: str = "imei"):
+def query_influx_for_ttn_dev(dev_eui: str, field: str = "resistance", time_range: str = "-4h", device_id_field: str = "imei"):
     client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG)
     query_api = client.query_api()
 
