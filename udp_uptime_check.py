@@ -42,8 +42,7 @@ def write_uptime_log(success: bool, test_name="udp"):
     timestamp = datetime.now(timezone.utc).isoformat()
     entry = {
         "timestamp": timestamp,
-        "test": test_name,
-        "success": success
+        test_name: success
     }
     try:
         with open(UPTIME_LOG_FILE, "r", encoding="utf-8") as f:
