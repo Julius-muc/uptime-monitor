@@ -21,7 +21,7 @@ UDP_PORT = 1025
 # Your TTN Simulation Config
 TTN_API_KEY = os.getenv("TTN_API_KEY")
 TTN_APP_ID = "pulse-s-2023-07"
-TTN_DEVICE_ID = "pulse-s-0031"
+TTN_DEVICE_ID = "pulse-s-0001"
 TTN_SIMULATE_URL = f"https://eu1.cloud.thethings.network/api/v3/as/applications/{TTN_APP_ID}/devices/{TTN_DEVICE_ID}/up/simulate"
 
 # InfluxDB Config
@@ -32,7 +32,7 @@ INFLUX_BUCKET = "sensor_data"
 
 # Device IDs for queries
 IMEI = "AAAAAAAAAAAAAA3"
-TTN_DEV_EUI = "0004A30B01043ECB"
+TTN_DEV_EUI = "0004A30B010452FC"
 
 UPTIME_LOG_FILE = "uptime-log.json"
 
