@@ -89,7 +89,7 @@ def query_influx_for_imei(imei: str, field: str = "signal", time_range: str = "-
     query = f'''
     from(bucket: "{INFLUX_BUCKET}")
       |> range(start: {time_range})
-      |> filter(fn: (r) => r["imei"] == "{imei}")
+      |> filter(fn: (r) => r["hardware_serial"] == "{imei}")
       |> filter(fn: (r) => r["_field"] == "{field}")
       |> sort(columns: ["_time"], desc: true)
       |> limit(n:1)
