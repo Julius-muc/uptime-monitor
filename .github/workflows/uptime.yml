@@ -33,6 +33,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install influxdb-client pytest
+          pip install requests
 
       # Run the Python UDP + Influx script
       - name: Run uptime check
