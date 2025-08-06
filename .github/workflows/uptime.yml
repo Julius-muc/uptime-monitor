@@ -16,6 +16,7 @@ jobs:
       PASSWORD_JULIUS: ${{ secrets.PASSWORD_JULIUS }}
       INFLUX_NAME: ${{ secrets.INFLUX_NAME }}
       INFLUX_API: ${{ secrets.INFLUX_API }}
+      TTN_API_KEY: ${{ secrets.TTN_API_KEY }}
 
     steps:
       - name: Checkout code
