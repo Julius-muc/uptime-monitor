@@ -36,9 +36,11 @@ jobs:
           pip install influxdb-client pytest
           pip install requests
 
-      # Run the Python UDP + Influx script
-      - name: Run uptime check
-        run: python udp_uptime_check.py  # rename as needed
+      - name: Record start time
+        run: date +%s > start_time.txt
+
+      - name: Send UDP test message
+        run: python send_udp_ping.py
 
       # No more artifact download step needed, because uptime-log.json is in repo
 
@@ -68,6 +70,9 @@ jobs:
 
       - name: Run Playwright tests
         run: npx playwright test
+
+      - name: Check InfluxDB for test result
+        run: python check_influx_for_ping.py
 
       - name: Run uptime analysis
         run: npx ts-node analyse.ts
