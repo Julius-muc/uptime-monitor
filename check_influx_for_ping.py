@@ -211,6 +211,25 @@ def query_influx_for_ttn_dev(dev_eui: str, field: str = "resistance", time_range
 
     return latest_time
 
+
+
+
+# Ensure at least 10 seconds have passed since start_time
+try:
+    with open("start_time.txt", "r") as f:
+        start_time = int(f.read().strip())
+    now = int(time.time())
+    elapsed = now - start_time
+    if elapsed < 10:
+        wait_time = 10 - elapsed
+        print(f"Only {elapsed}s passed since UDP send. Waiting {wait_time}s...")
+        time.sleep(wait_time)
+    else:
+        print(f"{elapsed}s passed since UDP send. No wait needed.")
+except Exception as e:
+    print(f"Could not read start time: {e}")
+
+
 # ----------- RUN UDP TEST -----------
 
 try:
@@ -219,15 +238,15 @@ try:
     now = datetime.now(timezone.utc)
 
     if latest_time is None:
-        print("❌ UDP test: No datapoint received in the last 4 hours.")
+        print("❌ UDP test: No datapoint received in the last 5 minutes.")
         write_uptime_log(False, "udp")
     else:
         time_diff = (now - latest_time).total_seconds()
         if time_diff < 300:
-            print("✅ UDP test: Datapoint received within the last 4 hours.")
+            print("✅ UDP test: Datapoint received within the last 5 minutes.")
             write_uptime_log(True, "udp")
         else:
-            print("❌ UDP test: Datapoint is older than 4 hours.")
+            print("❌ UDP test: Datapoint is older than 5 minutes.")
             write_uptime_log(False, "udp")
 except Exception as e:
     print(f"⚠️ UDP test failed: {e}")
@@ -243,15 +262,15 @@ try:
     latest_time = query_influx_for_ttn_dev(TTN_DEV_EUI, device_id_field="hardware_serial")
     now = datetime.now(timezone.utc)
     if latest_time is None:
-        print("❌ TTN test: No datapoint received in the last 4 hours.")
+        print("❌ TTN test: No datapoint received in the last 5 minutes.")
         write_uptime_log(False, "ttn")
     else:
         time_diff = (now - latest_time).total_seconds()
         if time_diff < 300:
-            print("✅ TTN test: Datapoint received within the last 4 hours.")
+            print("✅ TTN test: Datapoint received within the last 5 minutes.")
             write_uptime_log(True, "ttn")
         else:
-            print("❌ TTN test: Datapoint is older than 4 hours.")
+            print("❌ TTN test: Datapoint is older than 5 minutes.")
             write_uptime_log(False, "ttn")
     
 except Exception as e:
