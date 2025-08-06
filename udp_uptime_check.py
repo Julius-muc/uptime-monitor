@@ -89,7 +89,7 @@ def query_influx_for_imei(imei: str, field: str = "signal", time_range: str = "-
     query = f'''
     from(bucket: "{INFLUX_BUCKET}")
       |> range(start: {time_range})
-      |> filter(fn: (r) => r["hardware_serial"] == "{imei}")
+      |> filter(fn: (r) => r["imei"] == "{imei}")
       |> filter(fn: (r) => r["_field"] == "{field}")
       |> sort(columns: ["_time"], desc: true)
       |> limit(n:1)
@@ -106,6 +106,7 @@ def query_influx_for_imei(imei: str, field: str = "signal", time_range: str = "-
     return latest_time
 
 def simulate_ttn_uplink():
+    now = datetime.now(timezone.utc)
     payload = {
         "end_device_ids": {
             "device_id": TTN_DEVICE_ID,
@@ -115,7 +116,7 @@ def simulate_ttn_uplink():
             "dev_addr": "260B3523"
         },
         "correlation_ids": ["gs:uplink:01K1ZED8R4AV6STYN959VQS6V6"],
-        "received_at": "2025-08-06T10:21:41.206675966Z",
+        "received_at": now.isoformat(),
         "uplink_message": {
             "session_key_id": "AYxdn/mH/5t4ycMmHWkE/A==",
             "f_port": 1,
@@ -133,15 +134,15 @@ def simulate_ttn_uplink():
                         "gateway_id": "eui-a84041ffff2657ac",
                         "eui": "A84041FFFF2657AC"
                     },
-                    "time": "2025-08-06T10:21:40.961442Z",
-                    "timestamp": 1001117789,
+                    "time": now.isoformat(),
+                    "timestamp": int(now.timestamp()),
                     "rssi": -116,
                     "channel_rssi": -116,
                     "snr": -10.2,
                     "frequency_offset": "-2631",
                     "uplink_token": "CiIKIAoUZXVpLWE4NDA0MWZmZmYyNjU3YWMSCKhAQf//JlesEN2wr90DGgwItNnMxAYQiqfh2gMgyNaUupHzigE=",
                     "channel_index": 6,
-                    "received_at": "2025-08-06T10:21:40.995644298Z"
+                    "received_at": now.isoformat()
                 }
             ],
             "settings": {
@@ -153,10 +154,10 @@ def simulate_ttn_uplink():
                     }
                 },
                 "frequency": "867700000",
-                "timestamp": 1001117789,
-                "time": "2025-08-06T10:21:40.961442Z"
+                "timestamp": int(now.timestamp()),
+                "time": now.isoformat()
             },
-            "received_at": "2025-08-06T10:21:40.996879666Z",
+            "received_at": now.isoformat(),
             "consumed_airtime": "0.370688s",
             "packet_error_rate": 0.09090909,
             "network_ids": {
@@ -186,15 +187,14 @@ def simulate_ttn_uplink():
     time.sleep(10)
     return True
 
-def query_influx_for_ttn_dev(dev_eui: str, field: str = "field1", time_range: str = "-4h"):
+def query_influx_for_ttn_dev(dev_eui: str, field: str = "field1", time_range: str = "-4h", device_id_field: str = "imei"):
     client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG)
     query_api = client.query_api()
 
-    # Adjust the query based on your InfluxDB schema for TTN data
     query = f'''
     from(bucket: "{INFLUX_BUCKET}")
       |> range(start: {time_range})
-      |> filter(fn: (r) => r["dev_eui"] == "{dev_eui}")
+      |> filter(fn: (r) => r["{device_id_field}"] == "{dev_eui}")
       |> filter(fn: (r) => r["_field"] == "{field}")
       |> sort(columns: ["_time"], desc: true)
       |> limit(n:1)
@@ -239,7 +239,7 @@ try:
         raise Exception("TTN_API_KEY not set in environment")
 
     if simulate_ttn_uplink():
-        latest_time = query_influx_for_ttn_dev(TTN_DEV_EUI)
+        latest_time = query_influx_for_ttn_dev(TTN_DEV_EUI, device_id_field="hardware_serial")
         now = datetime.now(timezone.utc)
         if latest_time is None:
             print("❌ TTN test: No datapoint received in the last 4 hours.")
