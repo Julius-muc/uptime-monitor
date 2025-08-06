@@ -9300,16 +9300,6 @@
     "api": true
   },
   {
-    "timestamp": "2025-08-06T11:48:02.492373+00:00",
-    "test": "udp",
-    "success": true
-  },
-  {
-    "timestamp": "2025-08-06T11:48:02.501416+00:00",
-    "test": "ttn",
-    "success": false
-  },
-  {
     "timestamp": "2025-08-06T11:48:36.095Z",
     "cloudSpeedSingle": 5531
   },
@@ -9334,16 +9324,6 @@
     "api": true
   },
   {
-    "timestamp": "2025-08-06T11:58:04.244459+00:00",
-    "test": "udp",
-    "success": true
-  },
-  {
-    "timestamp": "2025-08-06T11:58:14.965976+00:00",
-    "test": "ttn",
-    "success": false
-  },
-  {
     "timestamp": "2025-08-06T11:58:44.627Z",
     "cloudSpeedSingle": 4931
   },
@@ -9366,16 +9346,6 @@
   {
     "timestamp": "2025-08-06T11:58:59.561Z",
     "api": true
-  },
-  {
-    "timestamp": "2025-08-06T12:05:29.382676+00:00",
-    "test": "udp",
-    "success": true
-  },
-  {
-    "timestamp": "2025-08-06T12:05:40.188259+00:00",
-    "test": "ttn",
-    "success": false
   },
   {
     "timestamp": "2025-08-06T12:06:22.436Z",
@@ -9414,16 +9384,6 @@
     "api": true
   },
   {
-    "timestamp": "2025-08-06T12:10:57.678451+00:00",
-    "test": "udp",
-    "success": false
-  },
-  {
-    "timestamp": "2025-08-06T12:11:08.853379+00:00",
-    "test": "ttn",
-    "success": false
-  },
-  {
     "timestamp": "2025-08-06T12:11:40.972Z",
     "cloudSpeedSingle": 6875
   },
@@ -9446,16 +9406,6 @@
   {
     "timestamp": "2025-08-06T12:12:02.127Z",
     "api": true
-  },
-  {
-    "timestamp": "2025-08-06T12:19:17.632079+00:00",
-    "test": "udp",
-    "success": true
-  },
-  {
-    "timestamp": "2025-08-06T12:19:18.084827+00:00",
-    "test": "ttn",
-    "success": false
   },
   {
     "timestamp": "2025-08-06T12:19:54.106Z",
@@ -9482,16 +9432,6 @@
     "api": true
   },
   {
-    "timestamp": "2025-08-06T12:21:43.166524+00:00",
-    "test": "udp",
-    "success": true
-  },
-  {
-    "timestamp": "2025-08-06T12:21:43.176271+00:00",
-    "test": "ttn",
-    "success": false
-  },
-  {
     "timestamp": "2025-08-06T12:22:19.850Z",
     "cloudSpeedSingle": 9474
   },
@@ -9516,16 +9456,6 @@
     "api": true
   },
   {
-    "timestamp": "2025-08-06T12:32:10.098479+00:00",
-    "test": "udp",
-    "success": true
-  },
-  {
-    "timestamp": "2025-08-06T12:32:21.538662+00:00",
-    "test": "ttn",
-    "success": false
-  },
-  {
     "timestamp": "2025-08-06T12:33:02.048Z",
     "cloudSpeedSingle": 8993
   },
@@ -9548,16 +9478,6 @@
   {
     "timestamp": "2025-08-06T12:33:18.190Z",
     "api": true
-  },
-  {
-    "timestamp": "2025-08-06T12:37:47.900686+00:00",
-    "test": "udp",
-    "success": true
-  },
-  {
-    "timestamp": "2025-08-06T12:37:58.770187+00:00",
-    "test": "ttn",
-    "success": true
   },
   {
     "timestamp": "2025-08-06T12:38:27.264Z",
