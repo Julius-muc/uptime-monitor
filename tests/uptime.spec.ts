@@ -239,6 +239,7 @@ test('Check Main Website Uptime', async ({ page }) => {
 
 test('Check API Uptime', async ({ browser }) => {
   test.setTimeout(5 * ATTEMPT_TIMEOUT_MS + 10000); // total timeout buffer
+
   let api = false;
   let attempt = 0;
 
@@ -249,17 +250,42 @@ test('Check API Uptime', async ({ browser }) => {
 
     try {
       console.log(`API check attempt ${attempt}...`);
+
       await Promise.race([
         (async () => {
-          await page.goto('https://api.treesense.net/', {
-            waitUntil: 'domcontentloaded',
+          // Step 1: Login
+          const loginRes = await page.request.post('https://api.treesense.net/v1/login', {
+            data: {
+              email: process.env.USERNAME_JULIUS,
+              password: process.env.PASSWORD_JULIUS,
+            },
             timeout: ATTEMPT_TIMEOUT_MS
           });
 
-          // Optional: Wait for presence of welcome message
-          await page.getByText('{"message":"Welcome to the Treesense API"}', {
-            exact: false
+          if (loginRes.status() !== 200) {
+            throw new Error(`Login failed with status ${loginRes.status()}`);
+          }
+
+          const { accessToken } = await loginRes.json();
+          console.log('Login successful, access token received.');
+
+          // Step 2: Make authenticated request to /v1/user
+          const userRes = await page.request.get('https://api.treesense.net/v1/sensors?id=385', {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            timeout: ATTEMPT_TIMEOUT_MS
           });
+
+          if (userRes.status() !== 200) {
+            throw new Error(`User endpoint failed with status ${userRes.status()}`);
+          }
+
+          const userData = await userRes.json();
+          console.log('User data retrieved:', userData);
+
+          api = true;
+          logUptime({ api });
         })(),
 
         new Promise((_, reject) =>
@@ -267,8 +293,6 @@ test('Check API Uptime', async ({ browser }) => {
         ),
       ]);
 
-      api = true;
-      logUptime({ api });
     } catch (error) {
       console.warn(`API check attempt ${attempt} failed:`, error.message);
       if (attempt >= MAX_RETRIES) {
@@ -280,6 +304,7 @@ test('Check API Uptime', async ({ browser }) => {
     }
   }
 });
+
 
 
 
