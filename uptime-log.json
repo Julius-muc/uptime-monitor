@@ -11082,5 +11082,37 @@
   {
     "timestamp": "2025-08-08T07:34:04.625416+00:00",
     "ttn": true
+  },
+  {
+    "timestamp": "2025-08-08T08:40:06.620Z",
+    "cloudSpeedSingle": 4931
+  },
+  {
+    "timestamp": "2025-08-08T08:40:06.623Z",
+    "cloudSpeedAll": 14604
+  },
+  {
+    "timestamp": "2025-08-08T08:40:06.626Z",
+    "LongestAction": 8
+  },
+  {
+    "timestamp": "2025-08-08T08:42:36.698Z",
+    "cloud": false
+  },
+  {
+    "timestamp": "2025-08-08T08:43:01.486Z",
+    "website": true
+  },
+  {
+    "timestamp": "2025-08-08T08:43:02.596Z",
+    "api": true
+  },
+  {
+    "timestamp": "2025-08-08T08:43:04.370156+00:00",
+    "udp": true
+  },
+  {
+    "timestamp": "2025-08-08T08:43:04.934408+00:00",
+    "ttn": true
   }
 ]
