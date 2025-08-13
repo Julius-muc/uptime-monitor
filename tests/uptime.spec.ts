@@ -24,6 +24,68 @@ function logUptime(entry: Record<string, boolean>) {
   fs.writeFileSync(logFile, JSON.stringify(data, null, 2));
 }
 
+test('Check Cloud Uptime with Retry', async ({ page }) => {
+  test.setTimeout(5 * ATTEMPT_TIMEOUT_MS + 10000); // total timeout buffer
+
+  if (!process.env.USERNAME_JULIUS || !process.env.PASSWORD_JULIUS) {
+    throw new Error('USERNAME_JULIUS and PASSWORD_JULIUS must be set as environment variables');
+  }
+
+  let attempt = 0;
+  let cloud = false;
+  let loggedIn = false;
+
+  while (attempt < MAX_RETRIES && !cloud) {
+    attempt++;
+    try {
+      console.log(`Attempt ${attempt}...`);
+
+      await Promise.race([
+        (async () => {
+          console.log('Loading cloud.treesense.net');
+          await page.goto('https://cloud.treesense.net/login');
+
+          if (!loggedIn) {
+            console.log('Typing User');
+            await page.getByRole('textbox', { name: 'email' }).fill(process.env.USERNAME_JULIUS);
+            console.log('Typing password');
+            await page.getByRole('textbox', { name: 'password' }).fill(process.env.PASSWORD_JULIUS);
+            console.log('Clicking login button');
+            await page.getByTestId('login-button').click();
+            console.log('waiting for loading of projects');
+            await page.waitForURL('**/projects');
+            loggedIn = true;
+          }
+
+          console.log('Waiting for Klimakammer');
+          await page.getByText('Klimakammer').click();
+          console.log('Clicking Klimakammer button');
+          await page.locator('.d-flex > button').first().click();
+          console.log('Clicking list button');
+          await page.getByRole('link', { name: 'list' }).click();
+          console.log('Clicking sensoren button');
+          await page.getByRole('tab', { name: 'Sensoren' }).click();
+          console.log('Clicking 70B3D57ED005A270 button');
+          await page.getByRole('cell', { name: '70B3D57ED005A270' }).click();
+          console.log('Get letztes senden 16');
+          await page.getByRole('cell', { name: '3.317 V' }).first().click();
+
+          cloud = true;
+          logUptime({ cloud });
+        })(),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Attempt timed out')), ATTEMPT_TIMEOUT_MS)
+        ),
+      ]);
+    } catch (error) {
+      console.warn(`Attempt ${attempt} failed:`, error.message);
+      if (attempt >= MAX_RETRIES) {
+        logUptime({ cloud: false });
+      }
+    }
+  }
+});
+
 test('Check Cloud speed', async ({ page }) => {
   const GLOBAL_TIMEOUT = 25_000; // 25 seconds in milliseconds
   const globalStart = Date.now();
@@ -145,67 +207,7 @@ test('Check Cloud speed', async ({ page }) => {
 
 
 
-test('Check Cloud Uptime with Retry', async ({ page }) => {
-  test.setTimeout(5 * ATTEMPT_TIMEOUT_MS + 10000); // total timeout buffer
 
-  if (!process.env.USERNAME_JULIUS || !process.env.PASSWORD_JULIUS) {
-    throw new Error('USERNAME_JULIUS and PASSWORD_JULIUS must be set as environment variables');
-  }
-
-  let attempt = 0;
-  let cloud = false;
-  let loggedIn = false;
-
-  while (attempt < MAX_RETRIES && !cloud) {
-    attempt++;
-    try {
-      console.log(`Attempt ${attempt}...`);
-
-      await Promise.race([
-        (async () => {
-          console.log('Loading cloud.treesense.net');
-          await page.goto('https://cloud.treesense.net/login');
-
-          if (!loggedIn) {
-            console.log('Typing User');
-            await page.getByRole('textbox', { name: 'email' }).fill(process.env.USERNAME_JULIUS);
-            console.log('Typing password');
-            await page.getByRole('textbox', { name: 'password' }).fill(process.env.PASSWORD_JULIUS);
-            console.log('Clicking login button');
-            await page.getByTestId('login-button').click();
-            console.log('waiting for loading of projects');
-            await page.waitForURL('**/projects');
-            loggedIn = true;
-          }
-
-          console.log('Waiting for Klimakammer');
-          await page.getByText('Klimakammer').click();
-          console.log('Clicking Klimakammer button');
-          await page.locator('.d-flex > button').first().click();
-          console.log('Clicking list button');
-          await page.getByRole('link', { name: 'list' }).click();
-          console.log('Clicking sensoren button');
-          await page.getByRole('tab', { name: 'Sensoren' }).click();
-          console.log('Clicking 70B3D57ED005A270 button');
-          await page.getByRole('cell', { name: '70B3D57ED005A270' }).click();
-          console.log('Get letztes senden 16');
-          await page.getByRole('cell', { name: '3.317 V' }).first().click();
-
-          cloud = true;
-          logUptime({ cloud });
-        })(),
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Attempt timed out')), ATTEMPT_TIMEOUT_MS)
-        ),
-      ]);
-    } catch (error) {
-      console.warn(`Attempt ${attempt} failed:`, error.message);
-      if (attempt >= MAX_RETRIES) {
-        logUptime({ cloud: false });
-      }
-    }
-  }
-});
 
 test('Check Main Website Uptime', async ({ page }) => {
   test.setTimeout(5 * ATTEMPT_TIMEOUT_MS + 10000); // total timeout buffer
