@@ -65,30 +65,33 @@ async function sendToTeams() {
     365: [],
   };
 
-  for (const service of serviceKeys) {
-    textSections.push(
-      `**📊 ${service.charAt(0).toUpperCase() + service.slice(1)} Übersicht:**`
-    );
-    for (const days of timeFrames) {
-      const uptime = uptimePercent(days, service).toFixed(2);
-      textSections.push(`• *Letzte ${days} Tage:* ${uptime}%`);
-      totalUptimes[days].push(+uptime);
-    }
-    textSections.push(''); // Add spacing
-  }
+  // Only boolean services
+const booleanServices = serviceKeys.filter((service) =>
+  data.some((r) => typeof r[service] === 'boolean')
+);
 
-  // Average uptime
-  textSections.push(`**📊 Insgesamt Übersicht:**`);
+for (const service of booleanServices) {
+  textSections.push(`**📊 ${service.charAt(0).toUpperCase() + service.slice(1)} Übersicht:**`);
   for (const days of timeFrames) {
-    const avg =
-      totalUptimes[days].length > 0
-        ? (
-            totalUptimes[days].reduce((a, b) => a + b, 0) /
-            totalUptimes[days].length
-          ).toFixed(2)
-        : '0.00';
-    textSections.push(`• *Letzte ${days} Tage:* ${avg}%`);
+    const uptime = uptimePercent(days, service);
+    if (uptime > 0) { // ✅ skip 0% entries
+      textSections.push(`• *Letzte ${days} Tage:* ${uptime.toFixed(2)}%`);
+      totalUptimes[days].push(uptime);
+    }
   }
+  textSections.push(''); // Add spacing
+}
+
+// Average uptime for boolean services only
+textSections.push(`**📊 Insgesamt Übersicht:**`);
+for (const days of timeFrames) {
+  const avg =
+    totalUptimes[days].length > 0
+      ? (totalUptimes[days].reduce((a, b) => a + b, 0) / totalUptimes[days].length).toFixed(2)
+      : '0.00';
+  textSections.push(`• *Letzte ${days} Tage:* ${avg}%`);
+}
+
 
   const title = 'Uptime Report';
   const text = textSections.join('\n\n');
