@@ -69,7 +69,7 @@ jobs:
         run: npx playwright install
 
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npx playwright test --workers=1
 
       - name: Check InfluxDB for test result
         run: python check_influx_for_ping.py
